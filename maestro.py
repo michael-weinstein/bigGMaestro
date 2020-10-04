@@ -48,8 +48,16 @@ def getListOfTargets(inputFilePath:str, failOnBadLines:bool=True):
             continue
         line = line.strip()
         invalidCharacters = set(line.upper()).difference(validTargetCharacterSet)
+        underscoreCount = line.count("_")
         if invalidCharacters:
             warningMessage = "Invalid target characters seen on line %s with target %s.  Invalid characters: %s" %(lineNumber, line, invalidCharacters)
+            if failOnBadLines:
+                raise ValueError(warningMessage)
+            else:
+                print("WARNING: SKIPPING LINE. %s" % warningMessage)
+                continue
+        if underscoreCount != 1:
+            warningMessage = "Targets should have one and only one underscore to separate guide and PAM sequences. Line %s target %s was not valid." % (lineNumber, line)
             if failOnBadLines:
                 raise ValueError(warningMessage)
             else:
